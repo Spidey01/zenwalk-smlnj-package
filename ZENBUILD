@@ -68,13 +68,13 @@ EOF
 	cp -pr "${startdir}/src/lib" "${startdir}/pkg/usr/lib/smlnj/"
 
 	mkdir -p "${startdir}/pkg/etc/profile.d"
-	cat << EOF > "${startdir}/pkg/etc/profile.d/smlnj.sh"
+	cat << "EOF" > "${startdir}/pkg/etc/profile.d/smlnj.sh"
 #!/bin/sh
 SMLNJ_HOME=/usr/lib/smlnj
 PATH="${PATH}:${SMLNJ_HOME}/bin"
 export SMLNJ_HOME
 EOF
-	cat << EOF > "${startdir}/pkg/etc/profile.d/smlnj.csh"
+	cat << "EOF" > "${startdir}/pkg/etc/profile.d/smlnj.csh"
 #!/bin/csh
 setenv SMLNJ_HOME /usr/lib/smlnj
 setenv PATH "${PATH}:${SMLNJ_HOME}/bin"
