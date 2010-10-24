@@ -1,0 +1,90 @@
+#Maintainer: Terry M. Poulin <BigBoss1964@gmail.com>
+#
+# Please report any issues with this package via Github:
+#
+# 	http://github.com/Spidey01/zenwalk-smlnj-package/issues
+#
+# If you must send an E-Mail, prefix the subject line with the package name, or
+# some other means of identifying it as NON-SPAM.
+
+pkgname=smlnj
+pkgver=110.72
+pkgrel=1
+zenver=66
+arch=i486
+source=("http://smlnj.cs.uchicago.edu/dist/working/${pkgver}/config.tgz")
+sourcetemplate="http://dl.dropbox.com/u/7012687/zenwalk/packages/${pkgname}"
+dotnew=("etc/profile.d/smlnj.sh" "etc/profile.d/smlnj.csh")
+url="http://www.smlnj.org/"
+
+slackdesc=\
+(
+#|-----handy-ruler------------------------------------------------------|
+"$pkgname - Standard ML of New Jersey"
+""
+"Standard ML of New Jersey (abbreviated SML/NJ) is a compiler for the"
+"Standard ML '97 programming language with associated libraries, tools,"
+"and documentation. SML/NJ is free, open source software."
+)
+
+build() {
+	cd "$startdir/src/"
+
+	# this esentially builds a standard SML/NJ environment, plus
+	# a few useful things like X Windows and foreign function interface
+	# libraries, that make life on C-loving unix-like systems better.
+	#
+	cat << EOF > config/targets
+request ml-ulex
+request ml-ulex-mllex-tool
+request ml-lex
+request ml-lex-lex-ext
+request ml-yacc
+request ml-yacc-grm-ext
+request ml-antlr
+request ml-lpt-lib
+request smlnj-lib
+request pgraph-util
+request tdp-util
+request cml
+request cml-lib
+request eXene
+request mlrisc
+request ckit
+request ml-nlffi-lib
+request ml-nlffigen
+request mlrisc-tools
+request heap2asm
+EOF
+	./config/install.sh || return 1
+
+	# There is a fair bit of crap in the build that should not be
+	# dumped in /usr/{bin,lib}. /opt/smlnj would be perfect. However
+	# that is reserved for the system admin, not us: so use /usr/lib/smlnj
+	# instead, then drop a set of scripts in /etc/profile.d
+	#
+	mkdir -p "${startdir}/pkg/usr/lib/smlnj"
+	cp -pr "${startdir}/src/bin" "${startdir}/pkg/usr/lib/smlnj/"
+	cp -pr "${startdir}/src/lib" "${startdir}/pkg/usr/lib/smlnj/"
+
+	mkdir -p "${startdir}/pkg/etc/profile.d"
+	cat << EOF > "${startdir}/pkg/etc/profile.d/smlnj.sh"
+#!/bin/sh
+SMLNJ_HOME=/usr/lib/smlnj
+PATH="${PATH}:${SMLNJ_HOME}/bin"
+export SMLNJ_HOME
+EOF
+	cat << EOF > "${startdir}/pkg/etc/profile.d/smlnj.csh"
+#!/bin/csh
+setenv SMLNJ_HOME /usr/lib/smlnj
+setenv PATH "${PATH}:${SMLNJ_HOME}/bin"
+EOF
+
+	# a little love note for the end user
+	mkdir -p "$startdir/pkg/usr/doc/${pkgname}-${pkgver}/"
+	cat << EOF > "$startdir/pkg/usr/doc/${pkgname}-${pkgver}/README.zenwalk"
+Because of the way SML/NJ is built on UNIX and Linux systems, it is easier to install all programs into /usr/lib/smlnj rather than /usr. It's also to much to litter with wrapper scripts.
+
+To this end, there are two files in /etc/profile.d created with this package. They will adjust PATH and set SMLNJ_HOME accordingly. This works much like Java.
+EOF
+} 
