@@ -13,7 +13,7 @@ pkgrel=1
 zenver=66
 arch=i486
 source=("http://smlnj.cs.uchicago.edu/dist/working/${pkgver}/config.tgz")
-sourcetemplate="http://dl.dropbox.com/u/7012687/zenwalk/packages/${pkgname}"
+sourcetemplate="http://www.auroracore.biz/user-accounts/terryp/${pkgname}"
 dotnew=("etc/profile.d/smlnj.sh" "etc/profile.d/smlnj.csh")
 url="http://www.smlnj.org/"
 
